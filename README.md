@@ -49,7 +49,16 @@ If you have the DHT22 on a small **3-pin breakout board** (with `+`, `out`, `−
 
 ### Display driver (SSD1306 vs SH1106)
 
-Many 1.3" 128x64 OLED modules use the **SH1106** controller rather than SSD1306. With the Adafruit SSD1306 library an SH1106 screen typically shows the image shifted by a couple of pixels or garbage on the edges. If that happens, switch to an SH1106 library (e.g. `Adafruit SH110X` and `Adafruit_SH1106G`, or `U8g2`) — the rest of the wiring stays the same. Most modules use I2C address `0x3C`; if nothing shows up, try `0x3D` in `OLED_ADDRESS`.
+This sketch is written for the **SH1106** controller, which is what most 1.3" 128x64 OLED modules use. Driving an SH1106 with the Adafruit SSD1306 library gives a screen full of noise or text drawn in the wrong place.
+
+If you have a 0.96" module with an **SSD1306** controller instead, change four things in the sketch:
+
+- `#include <Adafruit_SH110X.h>` → `#include <Adafruit_SSD1306.h>`
+- `Adafruit_SH1106G display(...)` → `Adafruit_SSD1306 display(...)`
+- `display.begin(OLED_ADDRESS, true)` → `display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)`
+- `SH110X_WHITE` → `SSD1306_WHITE` (two places)
+
+Most modules use I2C address `0x3C`; if nothing shows up, try `0x3D` in `OLED_ADDRESS`.
 
 ### Button
 
@@ -67,7 +76,7 @@ Install the following libraries via Arduino IDE → *Sketch → Include Library 
 
 - `DHT sensor library` — Adafruit
 - `Adafruit Unified Sensor` — Adafruit
-- `Adafruit SSD1306` — Adafruit
+- `Adafruit SH110X` — Adafruit (for SH1106 displays; use `Adafruit SSD1306` instead for SSD1306 displays, see above)
 - `Adafruit GFX Library` — Adafruit (`Adafruit BusIO` is pulled in automatically)
 
 ## 🚀 Uploading to the board

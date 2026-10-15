@@ -1,12 +1,12 @@
 // Arduino Weather Monitor
 // Reads temperature and humidity from a DHT22 on button press
-// and shows them on a 128x64 I2C OLED (SSD1306).
+// and shows them on a 128x64 I2C OLED (SH1106, 1.3").
 
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_SH110X.h>
 
 // ---- Hardware configuration ------------------------------------------------
 const uint8_t SCREEN_WIDTH = 128;
@@ -25,7 +25,7 @@ const unsigned long SENSOR_MIN_INTERVAL_MS = 2000;  // DHT22 cannot be read fast
 
 // ---- Objects ---------------------------------------------------------------
 DHT dht(DHT_PIN, DHT_TYPE);
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ---- Button state (software debounce, non-blocking) ------------------------
 int lastRawButtonState = HIGH;       // last raw reading from the pin
@@ -41,7 +41,7 @@ float lastHumidity = NAN;
 void showMessage(const __FlashStringHelper *line1, const __FlashStringHelper *line2) {
   display.clearDisplay();
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(SH110X_WHITE);
   display.setCursor(0, 0);
   display.println(line1);
   if (line2) {
@@ -52,7 +52,7 @@ void showMessage(const __FlashStringHelper *line1, const __FlashStringHelper *li
 
 void showReading(float temperature, float humidity) {
   display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(SH110X_WHITE);
 
   display.setTextSize(1);
   display.setCursor(0, 0);
@@ -105,7 +105,7 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   dht.begin();
 
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
+  if (!display.begin(OLED_ADDRESS, true)) {
     // Display not found: blink the on-board LED forever so the failure is visible.
     pinMode(LED_BUILTIN, OUTPUT);
     for (;;) {
